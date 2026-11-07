@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101622">
+  <meta name="description" content="Plan a compatible PC build around your budget, the way you use your computer, and optional per-part limits.">
+  <title>Buildwise | Find your next PC build</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #edf2fb;
+      --muted: #9ba8bd;
+      --blue: #86a9ff;
+      --paper: #171f2d;
+      --background: #101622;
+      --line: #2a3547;
+      --green: #83d6af;
+      --shadow: 0 18px 48px rgba(0, 0, 0, .2);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      background: radial-gradient(ellipse at 80% 0, rgba(91, 126, 212, .14), transparent 34rem), var(--background);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select { font: inherit; }
+    main { width: min(1050px, 90vw); margin: 0 auto; }
+
+    .topbar {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 max(5vw, calc((100vw - 1120px) / 2));
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      background: rgba(16, 22, 34, .78);
+    }
+
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); font-size: 19px; font-weight: 780; text-decoration: none; }
+    .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #465b7b; border-radius: 12px; background: #243450; color: #aac3ff; font-size: 19px; }
+    .top-note { color: var(--muted); font-size: 13px; }
+
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 120px; align-items: center; gap: 28px; padding: 58px 0 34px; }
+    .eyebrow { margin: 0 0 10px; color: #aac3ff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+    h1 { max-width: 690px; margin: 0; font-size: clamp(36px, 6vw, 61px); font-weight: 780; letter-spacing: -2.8px; line-height: 1.04; }
+    .hero-copy { max-width: 610px; margin: 16px 0 0; color: var(--muted); font-size: 16px; }
+    .hero-stamp { display: grid; width: 112px; height: 112px; place-content: center; justify-self: end; border: 1px solid #364a69; border-radius: 50%; background: #1b2940; color: #aac3ff; text-align: center; transform: rotate(7deg); }
+    .hero-stamp span { font-size: 30px; }
+    .hero-stamp strong { font-size: 11px; line-height: 1.3; }
+
+    .planner, .results { padding: clamp(20px, 4vw, 34px); border: 1px solid var(--line); border-radius: 20px; background: rgba(23, 31, 45, .94); box-shadow: var(--shadow); }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    .section-heading h2 { margin: 0; font-size: 22px; letter-spacing: -.5px; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .step-number { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border: 1px solid #3b4e6b; border-radius: 50%; color: #aac3ff; font-size: 13px; font-weight: 750; }
+
+    .field-grid, .secondary-question { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 19px 16px; }
+    .field label, .group-label { display: block; margin: 0 0 7px; color: #d3dced; font-size: 13px; font-weight: 700; }
+    .field-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .input-wrap { position: relative; }
+    .input-wrap .currency { position: absolute; top: 50%; left: 13px; color: var(--muted); transform: translateY(-50%); pointer-events: none; }
+    input, select { width: 100%; min-height: 47px; padding: 10px 12px; border: 1px solid #3a4659; border-radius: 10px; outline: none; background: #111a28; color: var(--ink); transition: border-color .16s, box-shadow .16s; }
+    input[type="number"] { padding-left: 31px; }
+    input:focus, select:focus, button:focus-visible { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(134, 169, 255, .18); }
+    input::placeholder { color: #79869a; }
+
+    .part-budgets { margin-top: 19px; border: 1px solid var(--line); border-radius: 12px; background: #141c29; }
+    .part-budgets summary { padding: 13px 15px; color: #dce5f3; cursor: pointer; font-size: 13px; font-weight: 700; }
+    .part-budgets summary::marker { color: var(--blue); }
+    .part-budget-content { padding: 0 15px 16px; }
+    .part-budget-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .part-budget-grid .field label { font-size: 11px; }
+    .part-budget-grid input { min-height: 42px; }
+
+    .question-block { margin-top: 26px; }
+    .choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .choice { position: relative; display: block; min-width: 0; cursor: pointer; }
+    .choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .choice-card { display: flex; min-height: 85px; flex-direction: column; justify-content: center; padding: 12px 14px; border: 1px solid #3a4659; border-radius: 12px; background: #111a28; transition: border-color .16s, background .16s; }
+    .choice-card strong { font-size: 13px; }
+    .choice-card span { margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .choice input:checked + .choice-card { border-color: var(--blue); background: #1b2940; box-shadow: inset 0 0 0 1px rgba(134, 169, 255, .18); }
+    .choice input:focus-visible + .choice-card { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .secondary-question { margin-top: 19px; }
+    .field[hidden], .question-block[hidden], .results[hidden], .form-error[hidden] { display: none; }
+
+    .form-actions, .results-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 25px; }
+    .button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 9px; padding: 10px 18px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; font-weight: 750; transition: transform .15s, background .15s; }
+    .button:hover { transform: translateY(-1px); }
+    .button-primary { background: var(--blue); color: #111a28; }
+    .button-primary:hover { background: #aac3ff; }
+    .button-secondary { border-color: #3a4659; background: #172131; color: var(--ink); }
+    .button-secondary:hover { background: #202c3e; }
+    .action-hint { color: var(--muted); font-size: 12px; }
+    .form-error { margin: 15px 0 0; padding: 10px 12px; border: 1px solid #9a5a61; border-radius: 9px; background: #3a2028; color: #ffd3d6; font-size: 13px; }
+
+    .results { margin: 22px 0 42px; scroll-margin-top: 20px; }
+    .results-heading { margin-bottom: 20px; }
+    .results-heading h2 { margin: 0; font-size: 25px; letter-spacing: -.7px; }
+    .results-heading p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .budget-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .summary-cell { padding: 13px 14px; border: 1px solid var(--line); border-radius: 11px; background: #131b28; }
+    .summary-cell span { display: block; color: var(--muted); font-size: 11px; }
+    .summary-cell strong { display: block; margin-top: 3px; font-size: 18px; }
+    .summary-cell strong.positive { color: var(--green); }
+    .summary-cell strong.negative { color: #ff9a9a; }
+    .build-note { margin: 0 0 18px; padding: 13px 15px; border-left: 3px solid var(--blue); border-radius: 0 9px 9px 0; background: #1a2639; color: #d4dfef; font-size: 13px; }
+    .parts-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .part-row { display: grid; grid-template-columns: minmax(110px, .75fr) minmax(0, 2fr) auto; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: #131b28; }
+    .part-category { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .part-name { display: block; font-size: 13px; font-weight: 700; }
+    .part-detail { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .part-price { white-space: nowrap; font-size: 13px; font-weight: 750; }
+    .no-match { padding: 17px; border: 1px solid #9a7950; border-radius: 11px; background: #31291e; color: #f2dfbd; font-size: 13px; }
+
+    .site-note { max-width: 800px; margin: 0 auto 34px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 11px; background: rgba(23, 31, 45, .65); color: var(--muted); font-size: 11px; }
+    .site-note strong { color: #d5deec; }
+    footer { padding: 0 5vw 25px; color: #748197; text-align: center; font-size: 11px; }
+
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: minmax(0, 1fr) 80px; gap: 12px; padding-top: 42px; }
+      .hero-stamp { width: 76px; height: 76px; }
+      .hero-stamp span { font-size: 22px; }
+      .hero-stamp strong { font-size: 9px; }
+      .part-budget-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .choice-grid { grid-template-columns: 1fr; }
+      .choice-card { min-height: 67px; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { min-height: 62px; }
+      .top-note { max-width: 120px; text-align: right; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-stamp { display: none; }
+      .field-grid, .secondary-question { grid-template-columns: 1fr; }
+      .form-actions .button { width: 100%; }
+      .budget-summary { grid-template-columns: 1fr; }
+      .summary-cell { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .summary-cell strong { margin-top: 0; }
+      .part-row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+      .part-category { grid-column: 1 / -1; }
+      .part-name, .part-detail { overflow-wrap: anywhere; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Buildwise home"><span class="brand-mark" aria-hidden="true">⌘</span><span>Buildwise</span></a>
+    <span class="top-note">A PC build that makes sense for you.</span>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Your personal PC build planner</p>
+        <h1 id="page-title">A better build starts with your budget.</h1>
+        <p class="hero-copy">Tell us what you can spend and what you want to do. We compare compatible processors, graphics cards, memory, storage and more to build a parts list around your budget.</p>
+      </div>
+      <div class="hero-stamp" aria-hidden="true"><span>⚙</span><strong>Built around<br>your needs</strong></div>
+    </section>
+
+    <form class="planner" id="build-form">
+      <div class="section-heading">
+        <div><h2>Let's plan your build</h2><p>Answer a few quick questions. You can skip the per-part budgets.</p></div>
+        <span class="step-number" aria-hidden="true">1</span>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="budget">Your total budget</label>
+          <div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="budget" name="budget" type="number" min="1500" max="100000" step="100" value="5000" required inputmode="numeric"></div>
+          <span class="field-hint">For the PC tower only. Starting at ₪1,500.</span>
+        </div>
+        <div class="field">
+          <label for="purpose">What will you use it for?</label>
+          <select id="purpose" name="purpose">
+            <option value="gaming">Gaming</option>
+            <option value="creator">Video editing, 3D or creative work</option>
+            <option value="everyday">School, office and everyday use</option>
+          </select>
+        </div>
+      </div>
+
+      <details class="part-budgets">
+        <summary>Optional: set a maximum budget for individual parts</summary>
+        <div class="part-budget-content">
+          <span class="field-hint">Leave a field empty if you have no limit for that part. These are maximums, not extra spending.</span>
+          <div class="part-budget-grid">
+            <div class="field"><label for="cap-cpu">Processor</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-cpu" data-cap="cpu" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-gpu">Graphics card</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-gpu" data-cap="gpu" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-motherboard">Motherboard</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-motherboard" data-cap="motherboard" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-ram">Memory (RAM)</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-ram" data-cap="ram" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-storage">Storage</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-storage" data-cap="storage" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-psu">Power supply</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-psu" data-cap="psu" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-case">Case</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-case" data-cap="case" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+            <div class="field"><label for="cap-cooler">CPU cooler</label><div class="input-wrap"><span class="currency" aria-hidden="true">₪</span><input id="cap-cooler" data-cap="cooler" type="number" min="0" step="50" placeholder="No limit" inputmode="numeric"></div></div>
+          </div>
+        </div>
+      </details>
+
+      <div class="question-block">
+        <span class="group-label" id="gaming-question-label">What matters most in games?</span>
+        <div class="choice-grid" role="radiogroup" aria-labelledby="gaming-question-label">
+          <label class="choice"><input type="radio" name="gamingGoal" value="1080p" checked><span class="choice-card"><strong>Smooth 1080p</strong><span>Great value for everyday gaming.</span></span></label>
+          <label class="choice"><input type="radio" name="gamingGoal" value="1440p"><span class="choice-card"><strong>Sharper 1440p</strong><span>More detail and room for demanding games.</span></span></label>
+          <label class="choice"><input type="radio" name="gamingGoal" value="4k"><span class="choice-card"><strong>High-end / 4K</strong><span>Prioritize graphics for the most demanding play.</span></span></label>
+        </div>
+      </div>
+
+      <div class="secondary-question">
+        <div class="field" id="display-field">
+          <label for="display">What resolution is your monitor?</label>
+          <select id="display" name="display"><option value="1080p">1080p</option><option value="1440p">1440p</option><option value="4k">4K</option></select>
+        </div>
+        <div class="field" id="workload-field" hidden>
+          <label for="workload">What kind of work matters most?</label>
+          <select id="workload" name="workload"><option value="editing">Video editing and content creation</option><option value="3d">3D rendering and design</option><option value="office">Office and multitasking</option></select>
+        </div>
+        <div class="field">
+          <label for="upgrade">Upgrade path preference</label>
+          <select id="upgrade" name="upgrade"><option value="balanced">A balanced build</option><option value="future">Leave room for future upgrades</option><option value="value">Get the most for my money now</option></select>
+        </div>
+        <div class="field">
+          <label for="gpu-brand">Graphics card preference</label>
+          <select id="gpu-brand" name="gpuBrand"><option value="any">No preference</option><option value="nvidia">NVIDIA (some creative apps)</option><option value="amd">AMD (often strong value)</option></select>
+        </div>
+      </div>
+
+      <div class="form-actions"><button class="button button-primary" type="submit">Find my parts <span aria-hidden="true">→</span></button><span class="action-hint">No account needed. Your answers stay in this browser.</span></div>
+      <p class="form-error" id="form-error" role="alert" hidden></p>
+    </form>
+
+    <section class="results" id="results" aria-labelledby="results-title" aria-live="polite" hidden>
+      <div class="results-heading"><h2 id="results-title">Your suggested build</h2><p id="results-subtitle"></p></div>
+      <div id="build-content"></div>
+    </section>
+
+    <aside class="site-note"><strong>A note about prices and compatibility:</strong> These are example parts and rough Israeli shekel estimates, not live shop prices. Stock, exact models and prices change. Before buying, check the exact motherboard BIOS and CPU support, memory type, cooler and graphics-card clearance, and power requirements with a local retailer. The estimate covers the tower only—not a monitor, peripherals, Windows, assembly or shipping.</aside>
+  </main>
+  <footer>Buildwise · A helpful starting point for your next PC build</footer>
+
+  <script>
+    const builds = [
+      {
+        id: "everyday", total: 1850, tier: "Everyday value", sockets: "AM4 · DDR4",
+        score: { gaming: 1, creator: 1, everyday: 5 },
+        description: "An affordable, efficient starting point for browsing, school and office work. The processor includes basic graphics, so a separate graphics card isn't needed for everyday use.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 5 5600G", detail: "6 cores · integrated graphics · AM4 · stock cooler included", price: 520 },
+          { key: "motherboard", category: "Motherboard", name: "B550M motherboard", detail: "AM4 socket · DDR4 · micro-ATX", price: 420 },
+          { key: "ram", category: "Memory", name: "16 GB DDR4 (2 × 8 GB)", detail: "Dual-channel kit", price: 180 },
+          { key: "gpu", category: "Graphics", name: "Integrated Radeon graphics", detail: "Included with the processor · not for demanding gaming", price: 0 },
+          { key: "storage", category: "Storage", name: "1 TB NVMe SSD", detail: "Fast everyday storage", price: 280 },
+          { key: "psu", category: "Power supply", name: "550 W 80+ Bronze", detail: "For this integrated-graphics build", price: 250 },
+          { key: "case", category: "Case", name: "Airflow micro-ATX case", detail: "Compact case with included fans", price: 200 }
+        ]
+      },
+      {
+        id: "gaming-entry", total: 3650, tier: "1080p gaming", sockets: "AM4 · DDR4",
+        score: { gaming: 3, creator: 2, everyday: 3 },
+        description: "A balanced 1080p gaming build. The dedicated graphics card gets most of the gaming budget, with 32 GB of memory for modern games and multitasking.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 5 5600", detail: "6 cores · AM4 · stock cooler included", price: 550 },
+          { key: "motherboard", category: "Motherboard", name: "B550M motherboard", detail: "AM4 socket · DDR4 · micro-ATX", price: 450 },
+          { key: "ram", category: "Memory", name: "32 GB DDR4 (2 × 16 GB)", detail: "Dual-channel kit", price: 280 },
+          { key: "gpu", category: "Graphics", name: "AMD Radeon RX 7600 8 GB", detail: "Dedicated graphics · aimed at 1080p gaming", price: 1450 },
+          { key: "storage", category: "Storage", name: "1 TB NVMe SSD", detail: "Fast storage for apps and games", price: 300 },
+          { key: "psu", category: "Power supply", name: "650 W 80+ Bronze", detail: "Headroom for this graphics card", price: 340 },
+          { key: "case", category: "Case", name: "Airflow ATX case", detail: "Check graphics-card clearance", price: 280 }
+        ]
+      },
+      {
+        id: "gaming-mid", total: 5350, tier: "1440p gaming", sockets: "AM5 · DDR5",
+        score: { gaming: 4, creator: 3, everyday: 3 },
+        description: "A current-generation AM5 platform with a stronger graphics card for 1440p gaming. The modern socket also gives you a clearer CPU upgrade path.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 5 7500F", detail: "6 cores · AM5 · stock cooler included", price: 850 },
+          { key: "motherboard", category: "Motherboard", name: "B650M motherboard", detail: "AM5 socket · DDR5 · micro-ATX", price: 650 },
+          { key: "ram", category: "Memory", name: "32 GB DDR5 (2 × 16 GB)", detail: "Dual-channel kit", price: 380 },
+          { key: "gpu", category: "Graphics", name: "AMD Radeon RX 7700 XT 12 GB", detail: "Dedicated graphics · aimed at 1440p gaming", price: 2250 },
+          { key: "storage", category: "Storage", name: "1 TB NVMe SSD", detail: "Fast storage for apps and games", price: 320 },
+          { key: "psu", category: "Power supply", name: "750 W 80+ Bronze", detail: "Suitable capacity for this class of GPU", price: 500 },
+          { key: "case", category: "Case", name: "Airflow ATX case", detail: "Check GPU length and cooler clearance", price: 400 }
+        ]
+      },
+      {
+        id: "creator-entry", total: 4010, tier: "Creative work starter", sockets: "AM4 · DDR4",
+        score: { gaming: 2, creator: 4, everyday: 2 },
+        description: "A more affordable starting point for editing and creative work, with a 6-core processor, 32 GB of memory and a CUDA-capable graphics card. Larger projects may benefit from more memory.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 5 5600", detail: "6 cores · AM4 · stock cooler included", price: 550 },
+          { key: "motherboard", category: "Motherboard", name: "B550M motherboard", detail: "AM4 socket · DDR4 · micro-ATX", price: 450 },
+          { key: "ram", category: "Memory", name: "32 GB DDR4 (2 × 16 GB)", detail: "Dual-channel kit", price: 280 },
+          { key: "gpu", category: "Graphics", name: "NVIDIA GeForce RTX 4060 8 GB", detail: "Dedicated graphics · CUDA-capable", price: 1750 },
+          { key: "storage", category: "Storage", name: "1 TB NVMe SSD", detail: "Fast storage for apps and project files", price: 300 },
+          { key: "psu", category: "Power supply", name: "650 W 80+ Bronze", detail: "Suitable capacity for this build", price: 400 },
+          { key: "case", category: "Case", name: "Airflow ATX case", detail: "Check graphics-card clearance", price: 280 }
+        ]
+      },
+      {
+        id: "creator", total: 6000, tier: "Creative workstation", sockets: "AM5 · DDR5",
+        score: { gaming: 3, creator: 5, everyday: 3 },
+        description: "A workstation-leaning balance: an 8-core processor and 64 GB of memory for editing, design and heavy multitasking, with a capable dedicated GPU.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 7 7700", detail: "8 cores · AM5 · stock cooler included", price: 1350 },
+          { key: "motherboard", category: "Motherboard", name: "B650 motherboard", detail: "AM5 socket · DDR5 · ATX", price: 700 },
+          { key: "ram", category: "Memory", name: "64 GB DDR5 (2 × 32 GB)", detail: "Dual-channel kit for larger projects", price: 700 },
+          { key: "gpu", category: "Graphics", name: "NVIDIA GeForce RTX 4060 8 GB", detail: "Dedicated graphics · CUDA-capable", price: 1750 },
+          { key: "storage", category: "Storage", name: "2 TB NVMe SSD", detail: "More room for project files", price: 500 },
+          { key: "psu", category: "Power supply", name: "750 W 80+ Bronze", detail: "Suitable capacity for this build", price: 550 },
+          { key: "case", category: "Case", name: "Airflow ATX case", detail: "Check GPU length and cooler clearance", price: 450 }
+        ]
+      },
+      {
+        id: "gaming-high", total: 8000, tier: "High-end gaming", sockets: "AM5 · DDR5",
+        score: { gaming: 5, creator: 4, everyday: 2 },
+        description: "A high-end gaming build with a fast modern graphics card, 8-core AM5 processor and 32 GB of DDR5. Best suited to a higher-resolution, high-refresh display.",
+        parts: [
+          { key: "cpu", category: "Processor", name: "AMD Ryzen 7 7700", detail: "8 cores · AM5 · stock cooler included", price: 1350 },
+          { key: "motherboard", category: "Motherboard", name: "B650 motherboard", detail: "AM5 socket · DDR5 · ATX", price: 700 },
+          { key: "ram", category: "Memory", name: "32 GB DDR5 (2 × 16 GB)", detail: "Dual-channel kit", price: 380 },
+          { key: "gpu", category: "Graphics", name: "NVIDIA GeForce RTX 5070 12 GB", detail: "Dedicated graphics · for high-resolution gaming", price: 3600 },
+          { key: "storage", category: "Storage", name: "2 TB NVMe SSD", detail: "Fast storage for games and apps", price: 500 },
+          { key: "psu", category: "Power supply", name: "850 W 80+ Gold", detail: "Quality unit with capacity headroom", price: 850 },
+          { key: "case", category: "Case", name: "Airflow ATX case", detail: "Verify graphics-card clearance", price: 620 }
+        ]
+      }
+    ];
+
+    const partsCatalog = {
+      cpus: [
+        { name: "AMD Ryzen 5 5600G", platform: "AM4", price: 520, gaming: 38, multi: 38, cores: 6, integrated: true, coolerIncluded: true, detail: "6 cores · AM4 · stock cooler included" },
+        { name: "AMD Ryzen 5 5600", platform: "AM4", price: 550, gaming: 46, multi: 44, cores: 6, integrated: false, coolerIncluded: true, detail: "6 cores · AM4 · stock cooler included" },
+        { name: "AMD Ryzen 7 5700X", platform: "AM4", price: 850, gaming: 51, multi: 61, cores: 8, integrated: false, coolerIncluded: false, detail: "8 cores · AM4 · stock cooler not included" },
+        { name: "AMD Ryzen 5 7500F", platform: "AM5", price: 850, gaming: 62, multi: 58, cores: 6, integrated: false, coolerIncluded: true, detail: "6 cores · AM5 · stock cooler included" },
+        { name: "AMD Ryzen 5 7600", platform: "AM5", price: 1050, gaming: 68, multi: 62, cores: 6, integrated: true, coolerIncluded: true, detail: "6 cores · AM5 · stock cooler included" },
+        { name: "AMD Ryzen 7 7700", platform: "AM5", price: 1350, gaming: 74, multi: 79, cores: 8, integrated: true, coolerIncluded: true, detail: "8 cores · AM5 · stock cooler included" },
+        { name: "Intel Core i5-12400", platform: "LGA1700", price: 750, gaming: 49, multi: 48, cores: 6, integrated: true, coolerIncluded: true, detail: "6 cores · LGA1700 · stock cooler included" },
+        { name: "Intel Core i5-14400", platform: "LGA1700", price: 1150, gaming: 66, multi: 72, cores: 10, integrated: true, coolerIncluded: true, detail: "10 cores · LGA1700 · stock cooler included" }
+      ],
+      motherboards: [
+        { name: "A520M motherboard", platform: "AM4", memory: "DDR4", size: "mATX", price: 340, detail: "AM4 · DDR4 · micro-ATX" },
+        { name: "B550M motherboard", platform: "AM4", memory: "DDR4", size: "mATX", price: 450, detail: "AM4 · DDR4 · micro-ATX" },
+        { name: "B550 ATX motherboard", platform: "AM4", memory: "DDR4", size: "ATX", price: 620, detail: "AM4 · DDR4 · ATX" },
+        { name: "A620M motherboard", platform: "AM5", memory: "DDR5", size: "mATX", price: 520, detail: "AM5 · DDR5 · micro-ATX" },
+        { name: "B650M motherboard", platform: "AM5", memory: "DDR5", size: "mATX", price: 650, detail: "AM5 · DDR5 · micro-ATX" },
+        { name: "B650 Wi-Fi ATX motherboard", platform: "AM5", memory: "DDR5", size: "ATX", price: 850, detail: "AM5 · DDR5 · Wi-Fi · ATX" },
+        { name: "H610M motherboard", platform: "LGA1700", memory: "DDR4", size: "mATX", price: 400, detail: "Intel LGA1700 · DDR4 · micro-ATX" },
+        { name: "B760M motherboard", platform: "LGA1700", memory: "DDR4", size: "mATX", price: 600, detail: "Intel LGA1700 · DDR4 · micro-ATX" },
+        { name: "B760 DDR5 Wi-Fi motherboard", platform: "LGA1700", memory: "DDR5", size: "ATX", price: 850, detail: "Intel LGA1700 · DDR5 · Wi-Fi · ATX" }
+      ],
+      memory: [
+        { name: "16 GB (2 × 8 GB) DDR4", type: "DDR4", capacity: 16, price: 180 },
+        { name: "32 GB (2 × 16 GB) DDR4", type: "DDR4", capacity: 32, price: 280 },
+        { name: "64 GB (2 × 32 GB) DDR4", type: "DDR4", capacity: 64, price: 520 },
+        { name: "16 GB (2 × 8 GB) DDR5", type: "DDR5", capacity: 16, price: 250 },
+        { name: "32 GB (2 × 16 GB) DDR5", type: "DDR5", capacity: 32, price: 380 },
+        { name: "64 GB (2 × 32 GB) DDR5", type: "DDR5", capacity: 64, price: 700 }
+      ],
+      graphics: [
+        { name: "Integrated graphics", brand: "integrated", price: 0, performance: 8, memory: 0, length: 0, psu: 0, detail: "Built into the processor · basic display and everyday use" },
+        { name: "AMD Radeon RX 6600 8 GB", brand: "amd", price: 1250, performance: 39, memory: 8, length: 250, psu: 550, detail: "Dedicated graphics · 8 GB" },
+        { name: "AMD Radeon RX 7600 8 GB", brand: "amd", price: 1550, performance: 52, memory: 8, length: 270, psu: 600, detail: "Dedicated graphics · 8 GB" },
+        { name: "NVIDIA GeForce RTX 4060 8 GB", brand: "nvidia", price: 1750, performance: 54, memory: 8, length: 260, psu: 550, detail: "Dedicated graphics · 8 GB · CUDA-capable" },
+        { name: "NVIDIA GeForce RTX 4060 Ti 8 GB", brand: "nvidia", price: 2300, performance: 65, memory: 8, length: 280, psu: 650, detail: "Dedicated graphics · 8 GB · CUDA-capable" },
+        { name: "AMD Radeon RX 7700 XT 12 GB", brand: "amd", price: 2450, performance: 72, memory: 12, length: 320, psu: 700, detail: "Dedicated graphics · 12 GB" },
+        { name: "AMD Radeon RX 7800 XT 16 GB", brand: "amd", price: 3300, performance: 82, memory: 16, length: 330, psu: 750, detail: "Dedicated graphics · 16 GB" },
+        { name: "NVIDIA GeForce RTX 5070 12 GB", brand: "nvidia", price: 3600, performance: 88, memory: 12, length: 320, psu: 750, detail: "Dedicated graphics · 12 GB · CUDA-capable" }
+      ],
+      storage: [
+        { name: "500 GB NVMe SSD", capacity: 500, price: 220, detail: "Fast everyday storage" },
+        { name: "1 TB NVMe SSD", capacity: 1000, price: 300, detail: "Fast storage for apps and games" },
+        { name: "2 TB NVMe SSD", capacity: 2000, price: 500, detail: "More room for games and project files" },
+        { name: "4 TB NVMe SSD", capacity: 4000, price: 950, detail: "Large fast storage capacity" }
+      ],
+      power: [
+        { name: "550 W 80+ Bronze power supply", watts: 550, price: 250 },
+        { name: "650 W 80+ Bronze power supply", watts: 650, price: 350 },
+        { name: "750 W 80+ Bronze power supply", watts: 750, price: 500 },
+        { name: "850 W 80+ Gold power supply", watts: 850, price: 750 }
+      ],
+      cases: [
+        { name: "Compact airflow micro-ATX case", size: "mATX", gpuLength: 270, price: 220, detail: "Micro-ATX · check graphics-card clearance" },
+        { name: "Airflow micro-ATX case", size: "mATX", gpuLength: 320, price: 320, detail: "Micro-ATX · check graphics-card clearance" },
+        { name: "Airflow ATX case", size: "ATX", gpuLength: 320, price: 400, detail: "ATX · check graphics-card clearance" },
+        { name: "Large airflow ATX case", size: "ATX", gpuLength: 360, price: 550, detail: "ATX · extra graphics-card clearance" }
+      ],
+      coolers: [
+        { name: "Included stock CPU cooler", price: 0, detail: "Included with the selected processor" },
+        { name: "Tower air CPU cooler", price: 300, detail: "Aftermarket tower air cooler" }
+      ]
+    };
+
+    const form = document.getElementById("build-form");
+    const purposeSelect = document.getElementById("purpose");
+    const displayField = document.getElementById("display-field");
+    const workloadField = document.getElementById("workload-field");
+    const results = document.getElementById("results");
+    const buildContent = document.getElementById("build-content");
+    const errorMessage = document.getElementById("form-error");
+
+    function formatPrice(amount) {
+      return new Intl.NumberFormat("en-IL", { style: "currency", currency: "ILS", maximumFractionDigits: 0 }).format(amount);
+    }
+
+    function updateQuestions() {
+      const purpose = purposeSelect.value;
+      displayField.hidden = purpose !== "gaming";
+      workloadField.hidden = purpose !== "creator";
+      document.querySelector(".question-block").hidden = purpose !== "gaming";
+    }
+
+    function getCaps() {
+      const caps = {};
+      document.querySelectorAll("[data-cap]").forEach(input => {
+        if (input.value.trim() !== "") caps[input.dataset.cap] = Number(input.value);
+      });
+      return caps;
+    }
+
+    function fitsCaps(build, caps) {
+      return build.parts.every(part => caps[part.key] === undefined || part.price <= caps[part.key]);
+    }
+
+    function withinCap(key, item, caps) {
+      return caps[key] === undefined || item.price <= caps[key];
+    }
+
+    function generateBuilds(purpose, caps, gpuBrand) {
+      const generated = [];
+      const cpus = partsCatalog.cpus.filter(item => withinCap("cpu", item, caps));
+      const motherboards = partsCatalog.motherboards.filter(item => withinCap("motherboard", item, caps));
+      const memory = partsCatalog.memory.filter(item => withinCap("ram", item, caps));
+      const graphics = partsCatalog.graphics.filter(item => {
+        if (!withinCap("gpu", item, caps)) return false;
+        if (purpose !== "everyday" && gpuBrand !== "any" && item.brand !== gpuBrand) return false;
+        if (purpose === "everyday") return item.brand === "integrated";
+        return item.brand !== "integrated";
+      });
+      const storage = partsCatalog.storage.filter(item => withinCap("storage", item, caps));
+      const power = partsCatalog.power.filter(item => withinCap("psu", item, caps));
+      const cases = partsCatalog.cases.filter(item => withinCap("case", item, caps));
+      const coolers = partsCatalog.coolers.filter(item => withinCap("cooler", item, caps));
+
+      cpus.forEach(cpu => {
+        motherboards.filter(board => board.platform === cpu.platform).forEach(board => {
+          memory.filter(ram => ram.type === board.memory).forEach(ram => {
+            graphics.forEach(gpu => {
+              if (gpu.brand === "integrated" && !cpu.integrated) return;
+              if (gpu.brand !== "integrated" && purpose === "everyday") return;
+              power.filter(unit => unit.watts >= gpu.psu).forEach(unit => {
+                cases.filter(item => item.gpuLength >= gpu.length && (board.size === "mATX" || item.size === "ATX")).forEach(pcCase => {
+                  const compatibleCoolers = coolers.filter(cooler => cooler.name !== "Included stock CPU cooler" || cpu.coolerIncluded);
+                  compatibleCoolers.forEach(cooler => {
+                    const parts = [
+                      { key: "cpu", category: "Processor", name: cpu.name, detail: cpu.detail, price: cpu.price },
+                      { key: "motherboard", category: "Motherboard", name: board.name, detail: board.detail, price: board.price },
+                      { key: "ram", category: "Memory", name: ram.name, detail: "Dual-channel kit", price: ram.price },
+                      { key: "gpu", category: "Graphics", name: gpu.name, detail: gpu.detail, price: gpu.price },
+                      { key: "storage", category: "Storage", name: "", detail: "", price: 0 },
+                      { key: "psu", category: "Power supply", name: unit.name, detail: `${unit.watts} W · suitable for this graphics card`, price: unit.price },
+                      { key: "case", category: "Case", name: pcCase.name, detail: pcCase.detail, price: pcCase.price },
+                      { key: "cooler", category: "CPU cooler", name: cooler.name, detail: cooler.detail, price: cooler.price }
+                    ];
+                    storage.forEach(drive => {
+                      parts[4] = { key: "storage", category: "Storage", name: drive.name, detail: drive.detail, price: drive.price };
+                      const total = parts.reduce((sum, part) => sum + part.price, 0);
+                      generated.push({
+                        total,
+                        tier: purpose === "gaming" ? "Gaming build" : purpose === "creator" ? "Creative work build" : "Everyday build",
+                        sockets: `${cpu.platform} · ${board.memory}`,
+                        parts: parts.map(part => ({ ...part })),
+                        cpu,
+                        gpu,
+                        ram,
+                        drive,
+                        futurePlatform: cpu.platform === "AM5"
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+      return generated;
+    }
+
+    function scoreBuild(build, purpose, goal, display, upgrade, workload, budget) {
+      const cpuGaming = Math.min(1.12, build.cpu.gaming / 72);
+      const cpuMultitasking = Math.min(1.12, build.cpu.multi / 80);
+      const gpuTarget = { "1080p": 48, "1440p": 70, "4k": 90 }[goal];
+      const monitorTarget = { "1080p": 48, "1440p": 70, "4k": 90 }[display];
+      const gpuGaming = Math.min(1.15, build.gpu.performance / Math.max(gpuTarget, monitorTarget));
+      const memory32 = Math.min(1, build.ram.capacity / 32);
+      const memory64 = Math.min(1, build.ram.capacity / 64);
+      const storage1TB = Math.min(1, build.drive.capacity / 1000);
+      let score;
+
+      if (purpose === "gaming") {
+        score = gpuGaming * 58 + cpuGaming * 22 + memory32 * 10 + storage1TB * 5;
+      } else if (purpose === "creator") {
+        score = cpuMultitasking * 30 + Math.min(1.12, build.gpu.performance / 78) * 28
+          + memory64 * 24 + Math.min(1, build.drive.capacity / 2000) * 10;
+        if (workload !== "office" && build.gpu.brand === "nvidia") score += 6;
+      } else {
+        score = cpuMultitasking * 45 + Math.min(1, build.ram.capacity / 16) * 20
+          + storage1TB * 20 + cpuGaming * 10;
+      }
+
+      if (upgrade === "future") score += build.futurePlatform ? 6 : build.cpu.platform === "LGA1700" ? 2 : 0;
+      if (upgrade === "value") score += Math.max(0, 1 - build.total / budget) * 7;
+      return score;
+    }
+
+    function getBuildReason(build, purpose, goal, display, workload) {
+      if (purpose === "creator") {
+        const task = workload === "3d" ? "3D work" : workload === "office" ? "multitasking" : "editing and creative apps";
+        const graphicsNote = build.gpu.brand === "nvidia" && workload !== "office" ? " The NVIDIA option may suit software that uses CUDA." : "";
+        return `This combination emphasizes processor performance, memory and storage for ${task}.${graphicsNote} Check your own apps' recommended specifications before buying.`;
+      }
+      if (purpose === "everyday") {
+        return "This combination prioritizes everyday speed and value, using the processor's integrated graphics instead of spending on a dedicated gaming card.";
+      }
+      return `This is the strongest-scoring combination within your budget for your ${goal} goal${goal !== display ? ` and ${display} monitor` : ""}. Actual game performance varies by title and settings; look up benchmarks for the games you play.`;
+    }
+
+    function renderBuild(build, budget, purpose, goal, display, workload) {
+      const remaining = budget - build.total;
+      const rows = build.parts.map(part => `
+        <li class="part-row">
+          <span class="part-category">${part.category}</span>
+          <span><span class="part-name">${part.name}</span><span class="part-detail">${part.detail}</span></span>
+          <span class="part-price">${part.price ? formatPrice(part.price) : "Included"}</span>
+        </li>`).join("");
+      return `
+        <div class="budget-summary">
+          <div class="summary-cell"><span>Estimated build</span><strong>${formatPrice(build.total)}</strong></div>
+          <div class="summary-cell"><span>Your budget</span><strong>${formatPrice(budget)}</strong></div>
+          <div class="summary-cell"><span>${remaining >= 0 ? "Left in budget" : "Over budget"}</span><strong class="${remaining >= 0 ? "positive" : "negative"}">${formatPrice(Math.abs(remaining))}</strong></div>
+        </div>
+        <p class="build-note"><strong>${build.tier} · ${build.sockets}</strong><br>${getBuildReason(build, purpose, goal, display, workload)}</p>
+        <ul class="parts-list" aria-label="Suggested PC parts">${rows}</ul>
+        <div class="results-actions">
+          <button class="button button-secondary" id="copy-build" type="button">Copy parts list</button>
+          <button class="button button-secondary" id="edit-build" type="button">Change my answers</button>
+        </div>`;
+    }
+
+    function renderNoMatch(budget, candidates) {
+      const cheapest = candidates.sort((a, b) => a.total - b.total)[0];
+      let suggestion = "Try increasing one or more per-part limits, or choose a different graphics-card preference.";
+      if (cheapest && cheapest.total > budget) {
+        suggestion = `The least expensive compatible example build is ${formatPrice(cheapest.total)}. Try raising your total budget to at least that amount, or adjust the per-part limits.`;
+      }
+      if (!cheapest) suggestion = "No compatible parts match these per-part limits and preferences. Raise a limit, clear some per-part budgets, or choose a different graphics-card preference.";
+      return `<div class="no-match"><strong>No complete parts combination fits all your limits.</strong><br>${suggestion} Prices are estimates; a local retailer may have different options.</div>
+        <div class="results-actions"><button class="button button-secondary" id="edit-build" type="button">Change my answers</button></div>`;
+    }
+
+    function generateBuild(event) {
+      event.preventDefault();
+      errorMessage.hidden = true;
+      const budgetInput = document.getElementById("budget");
+      const budget = Number(budgetInput.value);
+      if (!Number.isFinite(budget) || budget < Number(budgetInput.min) || budget > Number(budgetInput.max)) {
+        errorMessage.textContent = `Enter a total budget between ${formatPrice(Number(budgetInput.min))} and ${formatPrice(Number(budgetInput.max))}.`;
+        errorMessage.hidden = false;
+        budgetInput.focus();
+        return;
+      }
+
+      const caps = getCaps();
+      const purpose = purposeSelect.value;
+      const goal = document.querySelector('input[name="gamingGoal"]:checked').value;
+      const display = document.getElementById("display").value;
+      const workload = document.getElementById("workload").value;
+      const upgrade = document.getElementById("upgrade").value;
+      const gpuBrand = document.getElementById("gpu-brand").value;
+      const candidates = generateBuilds(purpose, caps, gpuBrand);
+      const matchingBuilds = candidates.filter(build => build.total <= budget && fitsCaps(build, caps));
+
+      document.getElementById("results-subtitle").textContent = `Based on your ${formatPrice(budget)} budget and ${purpose} priorities.`;
+      if (matchingBuilds.length) {
+        matchingBuilds.sort((a, b) =>
+          scoreBuild(b, purpose, goal, display, upgrade, workload, budget)
+          - scoreBuild(a, purpose, goal, display, upgrade, workload, budget)
+          || a.total - b.total
+        );
+        buildContent.innerHTML = renderBuild(matchingBuilds[0], budget, purpose, goal, display, workload);
+      } else {
+        buildContent.innerHTML = renderNoMatch(budget, candidates);
+      }
+
+      results.hidden = false;
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+      const copyButton = document.getElementById("copy-build");
+      if (copyButton) copyButton.addEventListener("click", copyBuild);
+      document.getElementById("edit-build").addEventListener("click", () => {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+        budgetInput.focus({ preventScroll: true });
+      });
+    }
+
+    async function copyBuild() {
+      const buildList = buildContent.querySelector(".parts-list");
+      if (!buildList) return;
+      const text = [
+        "Buildwise suggested PC build",
+        ...[...buildList.querySelectorAll(".part-row")].map(row => {
+          const category = row.querySelector(".part-category").textContent;
+          const name = row.querySelector(".part-name").textContent;
+          const price = row.querySelector(".part-price").textContent;
+          return `${category}: ${name} — ${price}`;
+        }),
+        `Estimated total: ${buildContent.querySelector(".summary-cell strong").textContent}`,
+        "Prices are estimates, not live quotes. Verify compatibility and current prices before buying."
+      ].join("\n");
+      const button = document.getElementById("copy-build");
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = "Parts list copied";
+      } catch (error) {
+        button.textContent = "Copy failed";
+        button.title = `Clipboard unavailable: ${error.message}`;
+      }
+    }
+
+    purposeSelect.addEventListener("change", updateQuestions);
+    form.addEventListener("submit", generateBuild);
+    updateQuestions();
+  </script>
+</body>
+</html>
